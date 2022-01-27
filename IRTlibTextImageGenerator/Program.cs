@@ -21,7 +21,10 @@ namespace TextImageGenerator
               
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            if (args.Length != 1)
+            bool useBlindText = false;
+            string blindTextTemplate = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,";
+
+            if (args.Length < 1)
             {
                 Console.WriteLine("Please provide excel-file with texts to render into image(s). Expected column names are: ");
                 Console.WriteLine(" - text: Text to Render");
@@ -45,6 +48,10 @@ namespace TextImageGenerator
             {
                 try
                 {
+                    if (args.Length > 1)
+                    {
+                        bool.TryParse(args[1], out useBlindText);
+                    }
                     if (File.Exists(args[0]))
                     {
                         Dictionary<string, int> _columnOrder = new Dictionary<string, int>();
@@ -138,6 +145,9 @@ namespace TextImageGenerator
                                                 string _textalignment = "left";
                                                 if (_columnOrder.ContainsKey("textalignment"))
                                                     _textalignment = reader.GetValue(_columnOrder["textalignment"]).ToString();
+
+                                                if (useBlindText)
+                                                    _text = blindTextTemplate.Substring(0, _text.Length);
 
                                                 GenerateImage(_width, _height, _left, _right, _top, _fontsize, _lineSpacing, _text, _font, _style, _file, _foreground, _bordercolor, _background, _borderwidth, _textalignment);
 
